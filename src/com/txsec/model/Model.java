@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,18 +27,21 @@ public class Model {
     private int vaoID;
     private int vboID;
     private float[] positions;
+    private int[] indices;
     private ModelShaderProgram modelShader;
 
     /**
      * Load data by ourselves.
      * @param positions
      */
-    public Model(float[] positions){
+    public Model(float[] positions,int[] indices){
         this.positions = positions;
+        this.indices = indices;
         vaoID = createVAO();
         modelShader = new ModelShaderProgram("src/com/txsec/shaders/model/vertexShader.vert",
                 "src/com/txsec/shaders/model/fragmentShader.frag");
         storeDataInVAO(positions,0);
+        storeIndices(indices);
         destroyVAO();
     }
 
@@ -67,7 +71,7 @@ public class Model {
      * @param positions
      * @param attributeNumber
      */
-    private void storeDataInVAO(float[] positions,int attributeNumber){
+    private void storeDataInVAO(float[] data,int attributeNumber){
         vboID = GL15.glGenBuffers(); //CREATE THE BUFFER, WE USE IT TO STORE DATA INTO SOMETHING
         vbo.add(vboID);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER,vboID); // WE MAKE THE BUFFER ACTIVE. THE TARGET GL_ARRAY_BUFFER ITS USED FOR VERTEX SHADER.
@@ -77,6 +81,16 @@ public class Model {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER,0);//Disable the Buffer... Destroy it.
     }
 
+
+    private void storeIndices(int[] indices){
+        vboID = GL15.glGenBuffers(); //CREATE THE BUFFER, WE USE IT TO STORE DATA INTO SOMETHING
+        vbo.add(vboID);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER,vboID); // WE MAKE THE BUFFER ACTIVE. THE TARGET GL_ARRAY_BUFFER ITS USED FOR VERTEX SHADER.
+        IntBuffer buffer = BufferUtil.createIntBuffer(indices);
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER,buffer,GL15.GL_STATIC_DRAW);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER,0);//Disable the Buffer... Destroy it.
+    }
+
     /**
      * Render the model into the screen.
      */
@@ -84,7 +98,9 @@ public class Model {
         modelShader.startProgram();
         GL30.glBindVertexArray(vaoID);//We activate the VAO
         GL20.glEnableVertexAttribArray(0); //Enable the current attribute of our enabled VAO
-        GL11.glDrawArrays(GL11.GL_TRIANGLES,0,6);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER,vboID);
+        GL11.glDrawElements(GL11.GL_TRIANGLES,indices.length,GL11.GL_UNSIGNED_INT,0);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER,0);
         GL20.glDisableVertexAttribArray(0);//Disable the current attribute of our enabled VAO
         GL30.glBindVertexArray(0); // We disable the VAO
         modelShader.stopProgram();

@@ -1,4 +1,4 @@
-#version 330 core
+#version 130 core
 
 in vec3 colour;
 

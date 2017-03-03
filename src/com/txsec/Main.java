@@ -4,6 +4,8 @@ import com.txsec.model.Model;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.*;
 
+import javax.swing.text.AbstractDocument;
+
 public class Main {
 
 
@@ -11,6 +13,7 @@ public class Main {
 
     private void start() {
         try {
+            ContextAttribs attribs = new ContextAttribs(1,2);
             Display.setDisplayMode(new DisplayMode(800,600));
             Display.create();
             Display.setTitle("OpenGL Learning");
@@ -32,12 +35,12 @@ public class Main {
                         -0.5f, -0.5f, 0f,
                         0.5f, -0.5f, 0f,
                         // Right top triangle
-                        0.5f, -0.5f, 0f,
                         0.5f, 0.5f, 0f,
-                        -0.5f, 0.5f, 0f
-                };
+                                     };
 
-        Model model = new Model(data);
+        int[] indices = {0,1,2,2,3,0};
+
+        Model model = new Model(data,indices);
 
         while (!Display.isCloseRequested()) {
             // render OpenGL here

@@ -32,6 +32,14 @@ public abstract class ShaderProgram {
         GL20.glBindAttribLocation(programID,attributeNumber,variableName);
     }
 
+    /*
+     * Example of how to use uniform variable for the shaders.
+     */
+    protected  void uniformVariable(){
+        int uniformVariable  = GL20.glGetUniformLocation(programID,"Text");
+        GL20.glUniform1f(uniformVariable,2.0F);
+    }
+
     public int getProgramID(){
             return programID;
         }

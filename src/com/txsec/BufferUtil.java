@@ -3,6 +3,7 @@ package com.txsec;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 /**
  * Created by TxSec on 27/02/2017.
@@ -17,4 +18,10 @@ public class BufferUtil {
         return buffer;
     }
 
+    public static IntBuffer createIntBuffer(int[] indices) {
+        IntBuffer buffer = BufferUtils.createIntBuffer(indices.length);
+        buffer.put(indices);
+        buffer.flip();
+        return buffer;
+    }
 }
